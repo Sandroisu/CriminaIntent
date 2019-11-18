@@ -68,15 +68,16 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             position = getAdapterPosition();
-            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
-            startActivityForResult(intent, position);
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId(), position);
+            startActivityForResult(intent, 1);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        position = requestCode;
+        if (requestCode == 1)
+        position = data.getIntExtra("123", 0);
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
