@@ -11,7 +11,6 @@ import java.util.UUID;
 public class CrimeActivity extends SingleFragmentActivity {
 
     private static final String EXTRA_CRIME_ID = "package com.alex.criminaintent.crime_id";
-    private static final String EXTRA_CRIME_POSITION = "package com.alex.criminaintent.crime_position";
 
     @Override
     protected Fragment createFragment() {
