@@ -30,12 +30,13 @@ public class CrimeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         assert getArguments() != null;
-        UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
+        int crimeId = (int) getArguments().getInt(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
-    public static CrimeFragment newInstance(UUID crimeId) {
+
+    public static CrimeFragment newInstance(int position) {
         Bundle args = new Bundle();
-        args.putSerializable(ARG_CRIME_ID, crimeId);
+        args.putInt(ARG_CRIME_ID, position);
         CrimeFragment fragment = new CrimeFragment();
         fragment.setArguments(args);
         return fragment;

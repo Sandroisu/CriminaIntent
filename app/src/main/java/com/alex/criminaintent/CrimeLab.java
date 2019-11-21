@@ -12,31 +12,32 @@ import java.util.UUID;
 public class CrimeLab {
     private static CrimeLab sCrimeLab;
 
-    private Map<UUID,Crime> mCrimes;
+    private ArrayList<Crime> mCrimes;
 
 
-    public static CrimeLab get(Context context){
-        if(sCrimeLab==null){
+    public static CrimeLab get(Context context) {
+        if (sCrimeLab == null) {
             sCrimeLab = new CrimeLab(context);
-        }return sCrimeLab;
+        }
+        return sCrimeLab;
     }
 
-    private CrimeLab (Context context){
-        mCrimes = new LinkedHashMap<>();
+    private CrimeLab(Context context) {
+        mCrimes = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Crime crime = new Crime();
             crime.setTitle("Crime #" + i);
             crime.setSolved(i % 2 == 0);
-            if (i%3==0) crime.setRequiresPolice(1);// Для каждого второго объекта
-            mCrimes.put(crime.getId(), crime);
+            if (i % 3 == 0) crime.setRequiresPolice(1);// Для каждого второго объекта
+            mCrimes.add(crime);
         }
     }
 
-    public List<Crime> getCrimes(){
-        return new ArrayList<>(mCrimes.values());
+    public List<Crime> getCrimes() {
+        return mCrimes;
     }
 
-    public Crime getCrime (UUID id){
-        return mCrimes.get(id);
+    public Crime getCrime(int position) {
+        return mCrimes.get(position);
     }
 }
