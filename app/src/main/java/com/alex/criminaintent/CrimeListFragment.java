@@ -1,6 +1,5 @@
 package com.alex.criminaintent;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,13 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 
 public class CrimeListFragment extends Fragment {
@@ -58,7 +57,7 @@ public class CrimeListFragment extends Fragment {
         public void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy" , Locale.getDefault());
             String date = dateFormat.format(mCrime.getDate());
             mDateTextView.setText(date);
             mSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
@@ -66,16 +65,9 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            int position = getAdapterPosition();
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId(), position);
-            startActivityForResult(intent, position);
+            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
+            startActivity(intent);
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        mCrimeAdapter.notifyItemChanged(requestCode);
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {

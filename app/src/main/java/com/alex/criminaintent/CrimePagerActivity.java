@@ -3,6 +3,9 @@ package com.alex.criminaintent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,29 +20,41 @@ import java.util.UUID;
 public class CrimePagerActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private List<Crime> mCrimes;
-    private int curentPosition;
     private static final String EXTRA_CRIME_ID = "com.bignerdranch.android.criminalintent.crime_id";
-    private static final String EXTRA_CRIME_POSITION = "com.bignerdranch.android.criminalintent.crime_position";
+    Button first, last;
+    int lastPosition;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crime_pager);
         UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
-        curentPosition = getIntent().getIntExtra(EXTRA_CRIME_POSITION, 0);
+        first = findViewById(R.id.first);
+        last = findViewById(R.id.last);
+        first.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewPager.setCurrentItem(0);
+            }
+        });
+        last.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewPager.setCurrentItem(lastPosition);
+            }
+        });
         mViewPager = findViewById(R.id.crime_view_pager);
         mCrimes = CrimeLab.get(this).getCrimes();
+        lastPosition = (mCrimes.size() - 1);
         FragmentManager fragmentManager = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             @Override
             public Fragment getItem(int position) {
                 Crime crime = mCrimes.get(position);
-                curentPosition=position;
-                Intent intent = new Intent();
-                intent.putExtra("123", curentPosition);
-                setResult(RESULT_OK, intent);
-
+                setButtonStatus();
                 return CrimeFragment.newInstance(crime.getId());
             }
+
             @Override
             public int getCount() {
                 return mCrimes.size();
@@ -51,12 +66,25 @@ public class CrimePagerActivity extends AppCompatActivity {
                 break;
             }
         }
-
     }
-    public static Intent newIntent(Context packageContext, UUID crimeId, int position) {
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    private void setButtonStatus(){
+        if (mViewPager.getCurrentItem() == 0)
+            first.setEnabled(false);
+        else first.setEnabled(true);
+        if (mViewPager.getCurrentItem() == lastPosition)
+            last.setEnabled(false);
+        else last.setEnabled(true);
+    }
+
+    public static Intent newIntent(Context packageContext, UUID crimeId) {
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
         intent.putExtra(EXTRA_CRIME_ID, crimeId);
-        intent.putExtra(EXTRA_CRIME_POSITION, position);
         return intent;
     }
 }
