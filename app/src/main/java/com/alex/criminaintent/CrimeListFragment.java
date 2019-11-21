@@ -23,7 +23,7 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mCrimeAdapter;
-    private int position;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
@@ -67,17 +67,16 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            position = getAdapterPosition();
+            int position = getAdapterPosition();
             Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId(), position);
-            startActivityForResult(intent, 1);
+            startActivityForResult(intent, position);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1)
-        position = data.getIntExtra("123", 0);
+        mCrimeAdapter.notifyItemChanged(requestCode);
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
@@ -127,11 +126,9 @@ public class CrimeListFragment extends Fragment {
 
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List <Crime> crimes = crimeLab.getCrimes();
-        if (mCrimeAdapter == null) {
         mCrimeAdapter = new CrimeAdapter(crimes);
         mCrimeRecyclerView.setAdapter(mCrimeAdapter);
-        } else {
-            mCrimeAdapter.notifyItemChanged(position);
-        }
+
     }
+
 }
