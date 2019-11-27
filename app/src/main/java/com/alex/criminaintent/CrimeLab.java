@@ -24,15 +24,12 @@ public class CrimeLab {
 
     private CrimeLab(Context context) {
         mCrimes = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            Crime crime = new Crime();
-            crime.setTitle("Crime #" + i);
-            crime.setSolved(i % 2 == 0);
-            if (i % 3 == 0) crime.setRequiresPolice(1);// Для каждого второго объекта
-            mCrimes.add(crime);
-        }
     }
 
+    public void addCrime(Crime c) {
+        mCrimes.add(c);
+    }
+    public void deleteCrime (Crime c ){ mCrimes.remove(c);}
     public List<Crime> getCrimes() {
         return mCrimes;
     }
