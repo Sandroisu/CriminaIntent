@@ -34,14 +34,13 @@ public class TimePickerFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Time time = (Time) getArguments().getSerializable(ARG_TIME);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(time);
+        final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR);
         int minute = calendar.get(Calendar.MINUTE);
+        long ms = calendar.get(Calendar.MILLISECOND);
                 View v = LayoutInflater.from(getActivity())
                 .inflate(R.layout.dialog_time, null);
         mTimePicker = v.findViewById(R.id.dialog_time_picker);
-        mTimePicker.setIs24HourView(true);
         mTimePicker.setHour(hour);
         mTimePicker.setMinute(minute);
         return new AlertDialog.Builder(getActivity())
@@ -52,7 +51,12 @@ public class TimePickerFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         int hour = mTimePicker.getHour();
                         int minute = mTimePicker.getMinute();
-                        Time time = new Time(hour,minute, 0);
+                        Calendar calendar1 = Calendar.getInstance();
+                        int year = calendar1.get(Calendar.YEAR);
+                        int month = calendar1.get(Calendar.MONTH);
+                        int day = calendar1.get(Calendar.DAY_OF_MONTH);
+                        calendar1.set(year, month, day, hour, minute, 0);
+                       Time time = new Time(calendar1.getTimeInMillis());
                         sendResultTime(Activity.RESULT_OK, time);
                     }
                 })

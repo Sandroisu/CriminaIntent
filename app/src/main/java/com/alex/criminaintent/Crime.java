@@ -1,5 +1,6 @@
 package com.alex.criminaintent;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.UUID;
 
@@ -7,6 +8,16 @@ public class Crime {
     private UUID mId;
     private String mTitle;
     private Date mDate;
+
+    public Time getTime() {
+        return mTime;
+    }
+
+    public void setTime(Time time) {
+        mTime = time;
+    }
+
+    private Time mTime;
 
     private boolean mSolved;
     private int mRequiresPolice;

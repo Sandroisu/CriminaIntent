@@ -82,13 +82,11 @@ public class CrimeFragment extends Fragment {
         });
 
         mTimeButton = v.findViewById(R.id.crime_time);
-        mTimeButton.setText(mCrime.getDate().toString());
         mTimeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager secondManager = getFragmentManager();
-                Time time = new Time(mCrime.getDate().getTime());
-                TimePickerFragment timeDialog = TimePickerFragment.newInstance(time);
+                TimePickerFragment timeDialog = TimePickerFragment.newInstance(mCrime.getTime());
                 timeDialog.setTargetFragment(CrimeFragment.this,REQUEST_TIME);
                 timeDialog.show(secondManager, "time");
 
@@ -129,8 +127,8 @@ public class CrimeFragment extends Fragment {
         if (requestCode == REQUEST_TIME) {
             Time time = (Time) data
                     .getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-            mCrime.setDate(time);
-            mTimeButton.setText(mCrime.getDate().toString());
+            mCrime.setTime(time);
+            mTimeButton.setText(mCrime.getTime().toString());
         }
     }
 
