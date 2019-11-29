@@ -1,15 +1,18 @@
 package com.alex.criminaintent;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +31,13 @@ public class DatePickerFragment extends DialogFragment {
     private DatePicker mDatePicker;
     private Button mButton;
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.AppTheme);
+    }
+
     public static DatePickerFragment newInstance(Date date) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_DATE, date);
@@ -36,12 +46,18 @@ public class DatePickerFragment extends DialogFragment {
         return fragment;
     }
 
+    @SuppressLint("NewApi")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_date, null);
+
         mDatePicker = v.findViewById(R.id.dialog_date_picker);
         mButton = v.findViewById(R.id.btnDatePicker);
+        Toolbar toolbar = v.findViewById(R.id.toolbarrr);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        toolbar.setTitle("CriminaIntent");
+        toolbar.setTitleTextColor(Color.WHITE);
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
