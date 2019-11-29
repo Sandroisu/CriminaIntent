@@ -54,10 +54,7 @@ public class DatePickerFragment extends DialogFragment {
 
         mDatePicker = v.findViewById(R.id.dialog_date_picker);
         mButton = v.findViewById(R.id.btnDatePicker);
-        Toolbar toolbar = v.findViewById(R.id.toolbarrr);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        toolbar.setTitle("CriminaIntent");
-        toolbar.setTitleTextColor(Color.WHITE);
+
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -74,7 +71,6 @@ public class DatePickerFragment extends DialogFragment {
                 Date date = new GregorianCalendar(year, month, day).
                         getTime();
                 sendResult(Activity.RESULT_OK, date);
-                dismiss();
             }
         });
         return v;
