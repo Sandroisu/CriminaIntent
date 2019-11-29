@@ -31,7 +31,6 @@ public class CrimeFragment extends Fragment {
     private Crime mCrime;
     private EditText mTitleField;
     private Button mDateButton;
-    private Button mTimeButton;
     private CheckBox mSolvedCheckbox;
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_TIME= 1;
@@ -81,19 +80,6 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        mTimeButton = v.findViewById(R.id.crime_time);
-        mTimeButton.setText(mCrime.getDate().toString());
-        mTimeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager secondManager = getFragmentManager();
-                Time time = new Time(mCrime.getDate().getTime());
-                TimePickerFragment timeDialog = TimePickerFragment.newInstance(time);
-                timeDialog.setTargetFragment(CrimeFragment.this,REQUEST_TIME);
-                timeDialog.show(secondManager, "time");
-
-            }
-        });
         mTitleField = v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
@@ -125,12 +111,6 @@ public class CrimeFragment extends Fragment {
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
             updateDate();
-        }
-        if (requestCode == REQUEST_TIME) {
-            Time time = (Time) data
-                    .getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-            mCrime.setDate(time);
-            mTimeButton.setText(mCrime.getDate().toString());
         }
     }
 
