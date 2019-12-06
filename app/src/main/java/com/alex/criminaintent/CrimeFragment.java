@@ -11,18 +11,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import java.sql.Time;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import static android.widget.CompoundButton.*;
@@ -30,7 +26,7 @@ import static android.widget.CompoundButton.*;
 public class CrimeFragment extends Fragment {
     private Crime mCrime;
     private EditText mTitleField;
-    private Button mDateButton;
+    private Button mDateButton, mDeleteButton;
     private CheckBox mSolvedCheckbox;
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_TIME= 1;
@@ -80,6 +76,14 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+      mDeleteButton = v.findViewById(R.id.delete);
+      mDeleteButton.setOnClickListener(new OnClickListener() {
+          @Override
+          public void onClick(View v) {
+
+          }
+      });
+
         mTitleField = v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
@@ -113,6 +117,12 @@ public class CrimeFragment extends Fragment {
             mCrime.setDate(date);
             updateDate();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
     }
 
     private void updateDate() {

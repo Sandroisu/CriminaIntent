@@ -1,5 +1,7 @@
 package com.alex.criminaintent;
 
+
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -11,10 +13,15 @@ public class Crime {
     private boolean mSolved;
     private int mRequiresPolice;
 
-    public Crime() {
-        mId = UUID.randomUUID();
+    public Crime(UUID id) {
+        mId = id;
         mDate = new Date();
     }
+
+    public Crime() {
+        this(UUID.randomUUID());
+    }
+
 
     public String getTitle() {
         return mTitle;

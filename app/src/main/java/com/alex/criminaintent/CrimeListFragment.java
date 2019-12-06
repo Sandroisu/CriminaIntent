@@ -130,6 +130,10 @@ public class CrimeListFragment extends Fragment {
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
         private List<Crime> mCrimes;
 
+        public void setCrimes(List<Crime> crimes) {
+            mCrimes = crimes;
+        }
+
         @Override
         public int getItemViewType(int position) {
             Crime crime = mCrimes.get(position);
@@ -160,15 +164,17 @@ public class CrimeListFragment extends Fragment {
     }
 
     public void updateUI() {
-        updateSubtitle();
+
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
         if(mCrimeAdapter==null) {
             mCrimeAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mCrimeAdapter);
         }else{
+            mCrimeAdapter.setCrimes(crimes);
             mCrimeAdapter.notifyDataSetChanged();
         }
+        updateSubtitle();
     }
 
 }
