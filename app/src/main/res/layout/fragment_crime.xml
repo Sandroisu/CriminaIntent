@@ -35,10 +35,16 @@
         android:layout_height="wrap_content"
         android:text="@string/crime_solved_label" />
     <Button
-    android:id="@+id/delete"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/Widget.AppCompat.Button.Borderless"
-        android:text="delete"/>
+        android:id="@+id/crime_suspect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/crime_suspect_text"
+        style="@style/Widget.AppCompat.Button.Borderless"/>
+    <Button
+        android:id="@+id/crime_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/crime_report_text"
+        style="@style/Widget.AppCompat.Button.Borderless"/>
 
 </LinearLayout>
