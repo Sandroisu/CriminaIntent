@@ -10,6 +10,7 @@ import com.alex.criminaintent.database.CrimeCursorWrapper;
 import com.alex.criminaintent.database.CrimeDbSchema;
 import com.alex.criminaintent.database.CrimeDbSchema.CrimeTable.Cols;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class CrimeLab {
     private static CrimeLab sCrimeLab;
     private Context mContext;
     private SQLiteDatabase mDatabase;
+
 
 
     public static CrimeLab get(Context context) {
@@ -68,6 +70,17 @@ public class CrimeLab {
             cursor.close();
         }
     }
+
+    public File getPhotoFile(Crime crime){
+
+        File filesDir = mContext.getFilesDir();
+        return new File (filesDir,crime.getPhotoFileName());
+        if (externalFilesDir == null) {
+
+        }
+    }
+
+
 
     private static ContentValues getContentValues(Crime crime) {
         ContentValues values = new ContentValues();

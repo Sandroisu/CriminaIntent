@@ -13,12 +13,15 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,9 +29,12 @@ import static android.widget.CompoundButton.*;
 
 public class CrimeFragment extends Fragment {
     private Crime mCrime;
+    private File mPhotoFile;
     private EditText mTitleField;
     private Button mDateButton;
     private Button mReportButton;
+    private ImageButton mPhotoButton;
+    private ImageView mPhotoView;
     private CheckBox mSolvedCheckbox;
     private static final int REQUEST_DATE = 0;
     private static final String ARG_CRIME_ID = "crime_id";
@@ -40,6 +46,7 @@ public class CrimeFragment extends Fragment {
         assert getArguments() != null;
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
     }
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -109,6 +116,9 @@ public class CrimeFragment extends Fragment {
             }
 
         });
+
+        mPhotoButton =v.findViewById(R.id.crime_camera);
+        mPhotoView = v.findViewById(R.id.crime_photo);
         return v;
     }
 
