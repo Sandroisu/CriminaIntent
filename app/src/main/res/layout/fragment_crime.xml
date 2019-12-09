@@ -46,5 +46,12 @@
         android:layout_height="wrap_content"
         android:text="@string/crime_report_text"
         style="@style/Widget.AppCompat.Button.Borderless"/>
+    <Button
+        android:id="@+id/crime_dial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CALL"
+        android:enabled="false"
+        style="@style/Widget.AppCompat.Button.Borderless"/>
 
 </LinearLayout>
