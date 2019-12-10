@@ -14,9 +14,11 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -50,9 +52,10 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckbox;
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
-    private static final int REQUEST_PHOTO= 2;
+    private static final int REQUEST_PHOTO = 2;
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
+    private ViewTreeObserver viewTreeObserver;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -148,23 +151,31 @@ public class CrimeFragment extends Fragment {
         }
 
         mPhotoButton = v.findViewById(R.id.crime_camera);
-        final Intent captureImage = new Intent (MediaStore.ACTION_IMAGE_CAPTURE);
-        boolean canTakePhoto = mPhotoFile != null&&captureImage.resolveActivity(packageManager)!=null;
+        final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        boolean canTakePhoto = mPhotoFile != null && captureImage.resolveActivity(packageManager) != null;
         mPhotoButton.setEnabled(canTakePhoto);
         mPhotoButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-            Uri uri = FileProvider.getUriForFile(getActivity(), "com.alex.criminalintent.fileprovider", mPhotoFile);
-            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                Uri uri = FileProvider.getUriForFile(getActivity(), "com.alex.criminalintent.fileprovider", mPhotoFile);
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 List<ResolveInfo> cameraActivities = getActivity().getPackageManager().queryIntentActivities(captureImage, PackageManager.MATCH_DEFAULT_ONLY);
-for (ResolveInfo activity : cameraActivities){
-    getActivity().grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-}
-startActivityForResult(captureImage,REQUEST_PHOTO);
+                for (ResolveInfo activity : cameraActivities) {
+                    getActivity().grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+                startActivityForResult(captureImage, REQUEST_PHOTO);
             }
         });
         mPhotoView = v.findViewById(R.id.crime_photo);
-        updatePhotoView();
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                ShowImage si = ShowImage.showFileDetail(mPhotoFile.getPath());
+                si.show(fragmentManager, "dsafs");
+            }
+        });
+       // updatePhotoView();
         return v;
     }
 
@@ -186,6 +197,19 @@ startActivityForResult(captureImage,REQUEST_PHOTO);
         String report = getString(R.string.crime_report, mCrime.getTitle(),
                 dateString, solvedString, suspect);
         return report;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewTreeObserver = mPhotoView.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+               updatePhotoView(PictureUtils.getScaledBitmap(mPhotoFile.getPath(),mPhotoView.getWidth(), mPhotoView.getHeight()));
+
+            }
+        });
     }
 
     @Override
@@ -215,18 +239,18 @@ startActivityForResult(captureImage,REQUEST_PHOTO);
             } finally {
                 c.close();
             }
-        }else if (requestCode == REQUEST_PHOTO){
-            Uri uri = FileProvider.getUriForFile(getActivity(),"com.alex.criminalintent.fileprovider", mPhotoFile);
+        } else if (requestCode == REQUEST_PHOTO) {
+            Uri uri = FileProvider.getUriForFile(getActivity(), "com.alex.criminalintent.fileprovider", mPhotoFile);
             getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            updatePhotoView();
+           // updatePhotoView();
         }
     }
 
-    private void updatePhotoView() {
-        if (mPhotoFile == null||!mPhotoFile.exists()){
+    private void updatePhotoView(Bitmap bitmap) {
+        if (mPhotoFile == null || !mPhotoFile.exists()) {
             mPhotoView.setImageDrawable(null);
-        }else{
-            Bitmap bitmap =PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
+        } else {
+
             mPhotoView.setImageBitmap(bitmap);
         }
     }
