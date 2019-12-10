@@ -35,6 +35,11 @@ public class CrimeLab {
         mDatabase = new CrimeBaseHelper(mContext).getWritableDatabase();
 
     }
+    public void deleteCrime(Crime c) {
+        String uuidString = c.getId().toString();
+        mDatabase.delete(CrimeDbSchema.CrimeTable.NAME, Cols.UUID+ " = ?", new String[]{uuidString});
+
+    }
 
     public void addCrime(Crime c) {
         ContentValues values = getContentValues(c);

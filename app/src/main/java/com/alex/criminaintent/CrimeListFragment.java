@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,7 @@ public class CrimeListFragment extends Fragment{
     private CrimeAdapter mCrimeAdapter;
     private boolean mSubtitleVisible;
     public Callbacks mCallbacks;
+    public Crime ncrime;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,7 +97,34 @@ public class CrimeListFragment extends Fragment{
     public void onResume() {
         super.onResume();
    updateUI();
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchCallback);
+        itemTouchHelper.attachToRecyclerView(mCrimeRecyclerView);
     }
+
+    ItemTouchHelper.Callback touchCallback = new ItemTouchHelper.Callback() {
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView,
+                RecyclerView.ViewHolder viewHolder) {
+            int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+            return makeMovementFlags(0, swipeFlags);
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            Crime crime = mCrimeAdapter.getCrimes().get(viewHolder.getAdapterPosition());
+            CrimeLab.get(getActivity()).deleteCrime(crime);
+            updateUI();
+        }
+
+    };
+
+
+
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleTextView;
@@ -125,11 +154,14 @@ public class CrimeListFragment extends Fragment{
         }
     }
 
-    private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
+    private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> implements ItemTouchHelperAdapter {
         private List<Crime> mCrimes;
 
         public void setCrimes(List<Crime> crimes) {
             mCrimes = crimes;
+        }
+        public List<Crime> getCrimes() {
+            return mCrimes;
         }
 
         @Override
@@ -158,6 +190,12 @@ public class CrimeListFragment extends Fragment{
         @Override
         public int getItemCount() {
             return mCrimes.size();
+        }
+
+        @Override
+        public void onItemDismiss(int position) {
+            mCrimes.remove(position);
+            notifyItemRemoved(position);
         }
     }
 
@@ -189,6 +227,10 @@ public class CrimeListFragment extends Fragment{
     public void onDetach() {
         super.onDetach();
         mCallbacks = null;
+    }
+
+    public interface ItemTouchHelperAdapter {
+        void onItemDismiss(int position);
     }
 
 }
