@@ -1,7 +1,7 @@
 package com.alex.criminaintent;
 
-import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -26,7 +26,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -48,9 +47,10 @@ public class CrimeFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
     private CheckBox mSolvedCheckbox;
+    private Callbacks mCallbacks;
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
-    private static final int REQUEST_PHOTO= 2;
+    private static final int REQUEST_PHOTO = 2;
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
 
@@ -82,6 +82,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                updateCrime();
             }
         });
 
@@ -121,7 +122,8 @@ public class CrimeFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCrime.setTitle(mTitleField.getText().toString());
+                mCrime.setTitle(s.toString());
+                updateCrime();
             }
 
             @Override
@@ -148,19 +150,19 @@ public class CrimeFragment extends Fragment {
         }
 
         mPhotoButton = v.findViewById(R.id.crime_camera);
-        final Intent captureImage = new Intent (MediaStore.ACTION_IMAGE_CAPTURE);
-        boolean canTakePhoto = mPhotoFile != null&&captureImage.resolveActivity(packageManager)!=null;
+        final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        boolean canTakePhoto = mPhotoFile != null && captureImage.resolveActivity(packageManager) != null;
         mPhotoButton.setEnabled(canTakePhoto);
         mPhotoButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-            Uri uri = FileProvider.getUriForFile(getActivity(), "com.alex.criminalintent.fileprovider", mPhotoFile);
-            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                Uri uri = FileProvider.getUriForFile(getActivity(), "com.alex.criminalintent.fileprovider", mPhotoFile);
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 List<ResolveInfo> cameraActivities = getActivity().getPackageManager().queryIntentActivities(captureImage, PackageManager.MATCH_DEFAULT_ONLY);
-for (ResolveInfo activity : cameraActivities){
-    getActivity().grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-}
-startActivityForResult(captureImage,REQUEST_PHOTO);
+                for (ResolveInfo activity : cameraActivities) {
+                    getActivity().grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+                startActivityForResult(captureImage, REQUEST_PHOTO);
             }
         });
         mPhotoView = v.findViewById(R.id.crime_photo);
@@ -197,6 +199,7 @@ startActivityForResult(captureImage,REQUEST_PHOTO);
             Date date = (Date) data
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
+            updateCrime();
             updateDate();
         } else if (requestCode == REQUEST_CONTACT && data != null) {
             Uri contactUri = data.getData();
@@ -211,22 +214,24 @@ startActivityForResult(captureImage,REQUEST_PHOTO);
                 c.moveToFirst();
                 String suspect = c.getString(0);
                 mCrime.setSuspect(suspect);
+                updateCrime();
                 mSuspectButton.setText(suspect);
             } finally {
                 c.close();
             }
-        }else if (requestCode == REQUEST_PHOTO){
-            Uri uri = FileProvider.getUriForFile(getActivity(),"com.alex.criminalintent.fileprovider", mPhotoFile);
+        } else if (requestCode == REQUEST_PHOTO) {
+            Uri uri = FileProvider.getUriForFile(getActivity(), "com.alex.criminalintent.fileprovider", mPhotoFile);
             getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            updateCrime();
             updatePhotoView();
         }
     }
 
     private void updatePhotoView() {
-        if (mPhotoFile == null||!mPhotoFile.exists()){
+        if (mPhotoFile == null || !mPhotoFile.exists()) {
             mPhotoView.setImageDrawable(null);
-        }else{
-            Bitmap bitmap =PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
+        } else {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
             mPhotoView.setImageBitmap(bitmap);
         }
     }
@@ -239,5 +244,26 @@ startActivityForResult(captureImage,REQUEST_PHOTO);
 
     private void updateDate() {
         mDateButton.setText(mCrime.getDate().toString());
+    }
+
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
+
+    private void updateCrime() {
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
+        mCallbacks.onCrimeUpdated(mCrime);
     }
 }

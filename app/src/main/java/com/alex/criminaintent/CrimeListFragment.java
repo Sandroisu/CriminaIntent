@@ -1,6 +1,6 @@
 package com.alex.criminaintent;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,10 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 
-public class CrimeListFragment extends Fragment {
+public class CrimeListFragment extends Fragment{
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mCrimeAdapter;
     private boolean mSubtitleVisible;
+    public Callbacks mCallbacks;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,10 +63,8 @@ public class CrimeListFragment extends Fragment {
             case R.id.new_crime:
                 Crime crime = new Crime();
                 CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity
-
-                        .newIntent(getActivity(), crime.getId());
-                startActivity(intent);
+                updateUI();
+                mCallbacks.onCrimeSelected(crime);
                 return true;
             case R.id.show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible;
@@ -122,8 +121,7 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
-            startActivity(intent);
+           mCallbacks.onCrimeSelected(mCrime);
         }
     }
 
@@ -175,6 +173,22 @@ public class CrimeListFragment extends Fragment {
             mCrimeAdapter.notifyDataSetChanged();
         }
         updateSubtitle();
+    }
+
+    public interface Callbacks{
+        void onCrimeSelected(Crime crime);
+    }
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
 }
