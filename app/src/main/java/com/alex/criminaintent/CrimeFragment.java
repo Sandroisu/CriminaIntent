@@ -33,6 +33,7 @@ import androidx.fragment.app.FragmentManager;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static android.widget.CompoundButton.*;
@@ -53,6 +54,8 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_PHOTO = 2;
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -243,7 +246,7 @@ public class CrimeFragment extends Fragment {
     }
 
     private void updateDate() {
-        mDateButton.setText(mCrime.getDate().toString());
+    mDateButton.setText(java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(mCrime.getDate()));
     }
 
     public interface Callbacks {
